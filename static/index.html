@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>BankMind - Subscription Predictor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 0 20px;
+            background: #f4f6f8;
+        }
+
+        h1 {
+            color: #1a3c5e;
+        }
+
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-top: 12px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 6px;
+            margin-top: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #1a3c5e;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            background: #999;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 16px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .yes {
+            background: #e6f7e6;
+            border: 1px solid #4caf50;
+        }
+
+        .no {
+            background: #fdeaea;
+            border: 1px solid #e53935;
+        }
+
+        .prob {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .factors {
+            margin-top: 10px;
+        }
+
+        .explanation {
+            margin-top: 14px;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>BankMind by Ishan</h1>
+    <p>Enter customer details to predict subscription likelihood and get a talking-point summary.</p>
+    <p style="font-size: 13px;"><a href="/docs" style="color: #1a3c5e;">&rarr; View raw API documentation (Swagger
+            /docs)</a></p>
+
+    <form id="customerForm">
+        <label>Age</label>
+        <input type="number" id="age" value="40" required>
+
+        <label>Job</label>
+        <select id="job">
+            <option>admin.</option>
+            <option>blue-collar</option>
+            <option>entrepreneur</option>
+            <option>housemaid</option>
+            <option>management</option>
+            <option>retired</option>
+            <option>self-employed</option>
+            <option>services</option>
+            <option>student</option>
+            <option>technician</option>
+            <option>unemployed</option>
+            <option>unknown</option>
+        </select>
+
+        <label>Marital Status</label>
+        <select id="marital">
+            <option>married</option>
+            <option>single</option>
+            <option>divorced</option>
+        </select>
+
+        <label>Education</label>
+        <select id="education">
+            <option>secondary</option>
+            <option>primary</option>
+            <option>tertiary</option>
+            <option>unknown</option>
+        </select>
+
+        <label>Has Credit Default?</label>
+        <select id="default">
+            <option>no</option>
+            <option>yes</option>
+        </select>
+
+        <label>Balance</label>
+        <input type="number" id="balance" value="1000" required>
+
+        <label>Has Housing Loan?</label>
+        <select id="housing">
+            <option>no</option>
+            <option>yes</option>
+        </select>
+
+        <label>Has Personal Loan?</label>
+        <select id="loan">
+            <option>no</option>
+            <option>yes</option>
+        </select>
+
+        <label>Contact Method</label>
+        <select id="contact">
+            <option>cellular</option>
+            <option>telephone</option>
+            <option>unknown</option>
+        </select>
+
+        <label>Day of Month Contacted</label>
+        <input type="number" id="day" value="15" required>
+
+        <label>Month</label>
+        <select id="month">
+            <option>jan</option>
+            <option>feb</option>
+            <option>mar</option>
+            <option>apr</option>
+            <option>may</option>
+            <option>jun</option>
+            <option>jul</option>
+            <option>aug</option>
+            <option>sep</option>
+            <option>oct</option>
+            <option>nov</option>
+            <option>dec</option>
+        </select>
+
+        <label>Last Call Duration (seconds)</label>
+        <input type="number" id="duration" value="200" required>
+
+        <label>Number of Contacts This Campaign</label>
+        <input type="number" id="campaign" value="1" required>
+
+        <label>Days Since Last Contact (-1 if never)</label>
+        <input type="number" id="pdays" value="-1" required>
+
+        <label>Previous Contacts</label>
+        <input type="number" id="previous" value="0" required>
+
+        <label>Previous Campaign Outcome</label>
+        <select id="poutcome">
+            <option>unknown</option>
+            <option>success</option>
+            <option>failure</option>
+            <option>other</option>
+        </select>
+
+        <button type="submit" id="submitBtn">Get Prediction</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('customerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const resultDiv = document.getElementById('result');
+            btn.disabled = true;
+            btn.textContent = 'Predicting...';
+            resultDiv.style.display = 'none';
+
+            const customer = {
+                age: parseInt(document.getElementById('age').value),
+                job: document.getElementById('job').value,
+                marital: document.getElementById('marital').value,
+                education: document.getElementById('education').value,
+                default: document.getElementById('default').value,
+                balance: parseInt(document.getElementById('balance').value),
+                housing: document.getElementById('housing').value,
+                loan: document.getElementById('loan').value,
+                contact: document.getElementById('contact').value,
+                day: parseInt(document.getElementById('day').value),
+                month: document.getElementById('month').value,
+                duration: parseInt(document.getElementById('duration').value),
+                campaign: parseInt(document.getElementById('campaign').value),
+                pdays: parseInt(document.getElementById('pdays').value),
+                previous: parseInt(document.getElementById('previous').value),
+                poutcome: document.getElementById('poutcome').value
+            };
+
+            try {
+                const predictRes = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(customer)
+                });
+                const prediction = await predictRes.json();
+
+                btn.textContent = 'Generating explanation...';
+
+                const explainRes = await fetch('/explain', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        age: customer.age,
+                        job: customer.job,
+                        balance: customer.balance,
+                        housing: customer.housing,
+                        loan: customer.loan,
+                        probability: prediction.probability
+                    })
+                });
+                const explanation = await explainRes.json();
+
+                resultDiv.className = prediction.will_subscribe ? 'yes' : 'no';
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = `
+      <div class="prob">${prediction.will_subscribe ? '✅ Likely to Subscribe' : '❌ Unlikely to Subscribe'}</div>
+      <div>Probability: ${(prediction.probability * 100).toFixed(1)}%</div>
+      <div class="factors"><b>Top factors:</b> ${prediction.top_factors.join(', ')}</div>
+      <div class="explanation">${explanation.explanation}</div>
+    `;
+            } catch (err) {
+                resultDiv.style.display = 'block';
+                resultDiv.className = 'no';
+                resultDiv.innerHTML = 'Error: ' + err.message;
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'Get Prediction';
+        });
+    </script>
+
+</body>
+
+</html>
