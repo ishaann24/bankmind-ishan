@@ -7,6 +7,9 @@ Predicts whether a bank customer will subscribe to a term deposit. Three models 
 **Live demo:** https://bankmind-ishan.onrender.com/
 
 ---
+**Note:** I also built a basic HTML form on top of the API, purely for easy manual testing - it chains the /predict and /explain calls together so you can see a full prediction plus explanation from one form submission instead of hitting each endpoint separately in Swagger.
+
+---
 
 ## The ML Work (Track B)
 
