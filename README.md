@@ -19,7 +19,7 @@ This was the part I actually found most interesting to build, so I went a bit de
 
 **Three models, compared honestly:**
 
-| Model | Accuracy | F1 (class 1) | Recall (class 1) | Precision (class 1) |
+| Model | Accuracy | F1 (y=1) | Recall (y=1) | Precision (y=1) |
 |---|---|---|---|---|
 | Logistic Regression | 84.6% | 0.55 | 0.81 | 0.42 |
 | Random Forest | 89.9% | 0.60 | 0.64 | 0.56 |
